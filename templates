@@ -1,0 +1,124 @@
+
+{% extends "base.html" %}
+{% block title %}Dashboard - Hotel Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Hotel Dashboard</h2>
+    <p class="text-muted">Overview for {{ today.strftime('%d %B %Y') }}</p>
+  </div>
+  <a href="{{ url_for('new_booking') }}" class="btn btn-primary">
+    + New Booking
+  </a>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-lg-2">
+    <div class="card p-3">
+      <small>Occupancy</small>
+      <h3>{{ stats.occupancy }}%</h3>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card p-3">
+      <small>Occupied</small>
+      <h3>{{ stats.occupied }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card p-3">
+      <small>Available</small>
+      <h3>{{ stats.free }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card p-3">
+      <small>Arrivals</small>
+      <h3>{{ stats.arrivals }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card p-3">
+      <small>Departures</small>
+      <h3>{{ stats.departures }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2">
+    <div class="card p-3">
+      <small>Revenue</small>
+      <h3>{{ currency }}{{ stats.revenue }}</h3>
+    </div>
+  </div>
+</div>
+
+<div class="card p-3 mb-4">
+  <h4>Room Overview</h4>
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Room</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Capacity</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for room in rooms %}
+        <tr>
+          <td>{{ room.number }}</td>
+          <td>{{ room.type }}</td>
+          <td>{{ currency }}{{ room.price }}</td>
+          <td>{{ room.capacity }}</td>
+          <td>
+            {% set state = states[room.id] %}
+            <span class="badge
+              {% if state == 'available' %}bg-success
+              {% elif state == 'occupied' %}bg-danger
+              {% elif state == 'reserved' %}bg-warning text-dark
+              {% else %}bg-secondary{% endif %}">
+              {{ state|title }}
+            </span>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="5">No rooms found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <a href="{{ url_for('rooms') }}">Manage Rooms →</a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card p-3 h-100">
+      <h4>Today's Arrivals</h4>
+      {% for booking in arrivals %}
+      <p class="border-bottom pb-2">
+        {{ booking.guest.name }} — Room {{ booking.room.number }}
+      </p>
+      {% else %}
+      <p class="text-muted">No arrivals today.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card p-3 h-100">
+      <h4>Today's Departures</h4>
+      {% for booking in departures %}
+      <p class="border-bottom pb-2">
+        {{ booking.guest.name }} — Room {{ booking.room.number }}
+      </p>
+      {% else %}
+      <p class="text-muted">No departures today.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
