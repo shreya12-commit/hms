@@ -4,12 +4,7 @@ from datetime import date, datetime
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(
-    __name__,
-    template_folder="templates",
-    static_folder="static"
-)
-
+app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "change-me-in-production")
 
 # --- Database -----------------------------------------------------------
@@ -245,26 +240,7 @@ def booking_action(booking_id, action):
         db.session.commit()
         flash(f"{transitions[action][2]}: {b.guest.name}, room {b.room.number}.", "ok")
     return redirect(request.referrer or url_for("bookings"))
-@app.route("/debug-templates")
-def debug_templates():
-    template_dir = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "templates"
-    )
 
-    return {
-        "app_root": app.root_path,
-        "template_folder": app.template_folder,
-        "template_directory_exists": os.path.isdir(template_dir),
-        "template_files": (
-            os.listdir(template_dir)
-            if os.path.isdir(template_dir)
-            else []
-        ),
-        "dashboard_exists": os.path.isfile(
-            os.path.join(template_dir, "dashboard.html")
-        ),
-    }
 
 if __name__ == "__main__":
     app.run(debug=True)
