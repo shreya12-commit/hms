@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Guests{% endblock %}
+{% block heading %}Guests{% endblock %}
+{% block content %}
+{% if guests %}
+<div class="scroll"><table>
+  <tr><th>Name</th><th>Email</th><th>Phone</th><th>Stays</th></tr>
+  {% for g in guests %}
+  <tr><td><b>{{ g.name }}</b></td><td>{{ g.email }}</td><td>{{ g.phone or '—' }}</td><td>{{ g.bookings|length }}</td></tr>
+  {% endfor %}
+</table></div>
+{% else %}
+<p class="empty">No guests yet. Guests are added when you <a href="{{ url_for('new_booking') }}">create a booking</a>.</p>
+{% endif %}
+{% endblock %}

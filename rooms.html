@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Rooms{% endblock %}
+{% block heading %}Rooms{% endblock %}
+{% block content %}
+<details class="panel">
+  <summary class="btn">Add a room</summary>
+  <form method="post" class="grid">
+    <label>Room number<input name="number" required placeholder="205"></label>
+    <label>Type
+      <select name="type"><option>Standard</option><option>Deluxe</option><option>Suite</option></select></label>
+    <label>Price per night ({{ currency }})<input type="number" name="price" min="1" required></label>
+    <label>Sleeps<input type="number" name="capacity" min="1" value="2" required></label>
+    <button class="btn primary">Save room</button>
+  </form>
+</details>
+
+<div class="rack big">
+  {% for r in rooms %}
+  <div class="key {{ states[r.id] }}">
+    <span class="num">{{ r.number }}</span>
+    <span class="meta">{{ r.type }} · sleeps {{ r.capacity }}</span>
+    <span class="meta">{{ currency }}{{ r.price }} / night</span>
+    <span class="st">{{ states[r.id] }}</span>
+    <form method="post" action="{{ url_for('toggle_maintenance', room_id=r.id) }}">
+      <button class="link">{{ 'Return to service' if r.status == 'maintenance' else 'Mark for maintenance' }}</button>
+    </form>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

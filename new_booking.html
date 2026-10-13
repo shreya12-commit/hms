@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}New booking{% endblock %}
+{% block heading %}New booking{% endblock %}
+{% block content %}
+<form method="get" class="panel grid">
+  <label>Check-in<input type="date" name="check_in" min="{{ today }}" value="{{ check_in or '' }}" required></label>
+  <label>Check-out<input type="date" name="check_out" min="{{ today }}" value="{{ check_out or '' }}" required></label>
+  <button class="btn">Find rooms</button>
+</form>
+
+{% if free is not none %}
+  {% if free %}
+  {% set n = (check_out - check_in).days %}
+  <form method="post" class="panel">
+    <input type="hidden" name="check_in" value="{{ check_in }}">
+    <input type="hidden" name="check_out" value="{{ check_out }}">
+    <h2>{{ free|length }} room{{ 's' if free|length != 1 }} free for {{ n }} night{{ 's' if n != 1 }}</h2>
+    <div class="choices">
+      {% for r in free %}
+      <label class="choice"><input type="radio" name="room_id" value="{{ r.id }}" required>
+        <span class="num">{{ r.number }}</span><span>{{ r.type }}, sleeps {{ r.capacity }}</span>
+        <b>{{ currency }}{{ r.price * n }}</b></label>
+      {% endfor %}
+    </div>
+    <h2>Guest</h2>
+    <div class="grid">
+      <label>Full name<input name="name" required></label>
+      <label>Email<input type="email" name="email" required></label>
+      <label>Phone<input name="phone"></label>
+      <button class="btn primary">Confirm booking</button>
+    </div>
+  </form>
+  {% else %}
+  <p class="empty">No rooms are free for those dates. Try different dates.</p>
+  {% endif %}
+{% else %}
+  <p class="empty">Pick your dates to see which rooms are free.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Bookings{% endblock %}
+{% block heading %}Bookings{% endblock %}
+{% block content %}
+<div class="tabs">
+  {% for s, label in [('all','All'),('confirmed','Confirmed'),('checked_in','In house'),('checked_out','Completed'),('cancelled','Cancelled')] %}
+  <a href="{{ url_for('bookings', status=s) }}" class="{{ 'on' if status == s }}">{{ label }}</a>
+  {% endfor %}
+  <a class="btn primary right" href="{{ url_for('new_booking') }}">New booking</a>
+</div>
+{% if bookings %}
+<div class="scroll"><table>
+  <tr><th>Guest</th><th>Room</th><th>Stay</th><th>Total</th><th>Status</th><th></th></tr>
+  {% for b in bookings %}
+  <tr>
+    <td><b>{{ b.guest.name }}</b><br><small>{{ b.guest.email }}</small></td>
+    <td>{{ b.room.number }} <small>{{ b.room.type }}</small></td>
+    <td>{{ b.check_in.strftime('%d %b') }} to {{ b.check_out.strftime('%d %b %Y') }}<br><small>{{ b.nights }} night{{ 's' if b.nights != 1 }}</small></td>
+    <td>{{ currency }}{{ '{:,}'.format(b.total) }}</td>
+    <td><span class="pill {{ b.status }}">{{ b.status.replace('_', ' ') }}</span></td>
+    <td class="acts">
+      {% if b.status == 'confirmed' %}
+        <form method="post" action="{{ url_for('booking_action', booking_id=b.id, action='check-in') }}"><button class="btn small">Check in</button></form>
+        <form method="post" action="{{ url_for('booking_action', booking_id=b.id, action='cancel') }}"><button class="link">Cancel</button></form>
+      {% elif b.status == 'checked_in' %}
+        <form method="post" action="{{ url_for('booking_action', booking_id=b.id, action='check-out') }}"><button class="btn small">Check out</button></form>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table></div>
+{% else %}
+<p class="empty">No bookings here yet.</p>
+{% endif %}
+{% endblock %}

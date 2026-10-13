@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Today{% endblock %}
+{% block heading %}Today at the hotel{% endblock %}
+{% block content %}
+<section class="stats">
+  <div><b>{{ stats.occupancy }}%</b><span>{{ stats.occupied }} rooms occupied</span></div>
+  <div><b>{{ stats.free }}</b><span>rooms free tonight</span></div>
+  <div><b>{{ stats.arrivals }}</b><span>arriving today</span></div>
+  <div><b>{{ stats.departures }}</b><span>leaving today</span></div>
+  <div><b>{{ currency }}{{ '{:,}'.format(stats.revenue) }}</b><span>revenue, in house or completed</span></div>
+</section>
+
+<h2>Key rack</h2>
+<div class="rack">
+  {% for r in rooms %}
+  <div class="key {{ states[r.id] }}">
+    <span class="num">{{ r.number }}</span>
+    <span class="meta">{{ r.type }}</span>
+    <span class="st">{{ states[r.id] }}</span>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="two">
+  <section>
+    <h2>Arriving today</h2>
+    {% for b in arrivals %}
+      <div class="row"><div><b>{{ b.guest.name }}</b><span>Room {{ b.room.number }} · {{ b.nights }} night{{ 's' if b.nights != 1 }}</span></div>
+        <form method="post" action="{{ url_for('booking_action', booking_id=b.id, action='check-in') }}"><button class="btn small">Check in</button></form></div>
+    {% else %}<p class="empty">No arrivals left today.</p>{% endfor %}
+  </section>
+  <section>
+    <h2>Leaving today</h2>
+    {% for b in departures %}
+      <div class="row"><div><b>{{ b.guest.name }}</b><span>Room {{ b.room.number }} · {{ currency }}{{ b.total }}</span></div>
+        <form method="post" action="{{ url_for('booking_action', booking_id=b.id, action='check-out') }}"><button class="btn small">Check out</button></form></div>
+    {% else %}<p class="empty">No departures today.</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}
