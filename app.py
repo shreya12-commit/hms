@@ -6,7 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(
     __name__,
-    template_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
+    template_folder="templates",
+    static_folder="static"
 )
 
 app.secret_key = os.environ.get("SECRET_KEY", "change-me-in-production")
